@@ -1,17 +1,23 @@
 cmake_minimum_required(VERSION 3.25)
-project(iPlug2OOS)
 
-# iPlug2 framework location. Default to the in-tree submodule, but allow an
-# external canonical checkout via `-DIPLUG2_DIR=/path` or the IPLUG2_DIR
-# environment variable. iPlug2 Agent sets this to a shared per-machine
-# checkout so individual plugin projects don't each carry ~2 GB of deps.
-set(IPLUG2_DIR "${CMAKE_SOURCE_DIR}/iPlug2" CACHE PATH "Path to the iPlug2 framework root")
-include(${IPLUG2_DIR}/iPlug2.cmake)
+project(PsycleAdapter VERSION 1.0.0 LANGUAGES CXX C)
 
-find_package(iPlug2 REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(TemplateProject)
+# 1. Handle fallback flags safely for the Windows runner (clang-cl)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wno-unknown-pragmas)
+    if(MSVC OR CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+        add_compile_options(-clang:-Wno-unknown-pragmas)
+    endif()
+endif()
 
+# 2. Point to your iPlug2OOS framework directory
+# Ensure you fetch/submodule iPlug2 into your workspace root
+add_subdirectory(iPlug2)
+
+# 3. Define your processing and UI source trees (including config.h here)
 set(SOURCE_FILES
     config.h
     PsycleAdapter.h
@@ -19,8 +25,12 @@ set(SOURCE_FILES
     PsycleAdapterUI.cpp
 )
 
-# 4. Initialize the iPlug2 target generator macro (Cleaned up)
+# 4. Initialize the iPlug2 target generator macro 
+# (Completely stripped of the illegal CONFIG_H tag)
 iplug_add_plugin(PsycleAdapter
     SOURCES ${SOURCE_FILES}
     FORMATS VST3 Standalone
 )
+
+# 5. Link the hardware accelerated vector graphics library layer
+target_link_libraries(PsycleAdapter PRIVATE iPlug2::IGraphics)
