@@ -11,3 +11,16 @@ include(${IPLUG2_DIR}/iPlug2.cmake)
 find_package(iPlug2 REQUIRED)
 
 add_subdirectory(TemplateProject)
+
+set(SOURCE_FILES
+    config.h
+    PsycleAdapter.h
+    PsycleAdapter.cpp
+    PsycleAdapterUI.cpp
+)
+
+# 4. Initialize the iPlug2 target generator macro (Cleaned up)
+iplug_add_plugin(PsycleAdapter
+    SOURCES ${SOURCE_FILES}
+    FORMATS VST3 Standalone
+)
