@@ -1,0 +1,36 @@
+name: iPlug2 Build Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Configure CMake Project
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compile Plugin Binaries
+        run: cmake --build build --config Release
+
+      - name: Upload Compiled VST3 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dexter-Psycle-Adapter-VST3
+          path: build/out/
