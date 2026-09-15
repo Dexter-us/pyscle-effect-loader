@@ -16,15 +16,14 @@ endif()
 # 2. Point to your iPlug2OOS framework directory
 add_subdirectory(iPlug2)
 
-# 3. Define your processing and UI source trees (including config.h)
+# 3. Define your processing and UI source trees (Removing config.h from here)
 set(SOURCE_FILES
-    config.h
     PsycleAdapter.h
     PsycleAdapter.cpp
     PsycleAdapterUI.cpp
 )
 
-# 4. Initialize the iPlug2 target generator macro (CLEANED UP FIXED VERSION)
+# 4. Initialize the iPlug2 target generator macro
 iplug_add_plugin(PsycleAdapter
     SOURCES ${SOURCE_FILES}
     FORMATS VST3 Standalone
